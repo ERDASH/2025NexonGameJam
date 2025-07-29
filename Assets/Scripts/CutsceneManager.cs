@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public enum CutsceneActionType
 {
@@ -60,5 +61,7 @@ public class CutsceneManager : MonoBehaviour
 
         if (deactivateOnEnd)
             gameObject.SetActive(false);
+
+        SceneManager.LoadScene("Scene_Title");
     }
 }
