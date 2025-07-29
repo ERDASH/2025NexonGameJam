@@ -796,6 +796,7 @@ GameObject:
   - component: {fileID: 5518597803911021962}
   - component: {fileID: 2088643083113640227}
   - component: {fileID: 2957404793597523821}
+  - component: {fileID: 5518597803911021963}
   m_Layer: 0
   m_Name: SprHowPrev
   m_TagString: Untagged
@@ -938,6 +939,7 @@ GameObject:
   - component: {fileID: 1316043125753966259}
   - component: {fileID: 3955032431534135660}
   - component: {fileID: 1681367857078126697}
+  - component: {fileID: 3955032431534135661}
   m_Layer: 0
   m_Name: SprHowQuit
   m_TagString: Untagged
@@ -1650,6 +1652,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3955032431534135661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 853281115123507919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ffc26a0ca7216e4ca7bf665a9ed74ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sfxName: Button
 --- !u!212 &4063590399945266688
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1961,6 +1976,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 305132403413391014}
   m_CullTransparentMesh: 1
+--- !u!114 &5518597803911021963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305132403413391014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ffc26a0ca7216e4ca7bf665a9ed74ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sfxName: Button
 --- !u!1001 &5558978066707090733
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2510,6 +2538,7 @@ GameObject:
   - component: {fileID: 8068713810810296926}
   - component: {fileID: 8143241224842689005}
   - component: {fileID: 1105165608}
+  - component: {fileID: 8143241224842689006}
   m_Layer: 0
   m_Name: ButtonHow
   m_TagString: Untagged
@@ -2626,6 +2655,19 @@ MonoBehaviour:
   moveDirection: 1
   stageSelect: 0
   sceneName: 
+--- !u!114 &8143241224842689006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7481626467429496873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ffc26a0ca7216e4ca7bf665a9ed74ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sfxName: Button
 --- !u!223 &8168052227497133151
 Canvas:
   m_ObjectHideFlags: 0
@@ -2661,6 +2703,7 @@ GameObject:
   - component: {fileID: 2627045956609783312}
   - component: {fileID: 1326857507497342775}
   - component: {fileID: 2394866446545523895}
+  - component: {fileID: 8196002877134924644}
   m_Layer: 0
   m_Name: SprHowNext
   m_TagString: Untagged
@@ -2668,6 +2711,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8196002877134924644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8196002877134924643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ffc26a0ca7216e4ca7bf665a9ed74ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sfxName: Button
 --- !u!1 &8492173878209417878 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7906025236252891325, guid: 399a14abb972a0148958039c7606eed4, type: 3}
@@ -2699,6 +2755,7 @@ GameObject:
   - component: {fileID: 43149439212332924}
   - component: {fileID: 7625123298490549228}
   - component: {fileID: 8671210410392192881}
+  - component: {fileID: 8671210410392192882}
   m_Layer: 0
   m_Name: ButtonStart
   m_TagString: Untagged
@@ -2720,6 +2777,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultSprite: {fileID: 21300000, guid: f9eba52a1bb00fe48a44d7764f4500b2, type: 3}
   hoverSprite: {fileID: 21300000, guid: d73357ec8f841554083353e31b699d75, type: 3}
+--- !u!114 &8671210410392192882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8671210410392192880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ffc26a0ca7216e4ca7bf665a9ed74ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sfxName: Button
 --- !u!1 &8752538999088306516
 GameObject:
   m_ObjectHideFlags: 0
