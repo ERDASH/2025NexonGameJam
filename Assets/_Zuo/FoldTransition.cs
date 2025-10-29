@@ -9,9 +9,12 @@ public class FoldTransition : MonoBehaviour
 
     public float waitBeforeOpen = 0.2f;
 
+    public bool isRealMove = true;
+
     private Vector2 topOrigin;
     private Vector2 bottomOrigin;
     private float screenHalfHeight;
+    private float speed = 5f;
 
     private enum State { Entering, Waiting, SceneChange, Exiting }
     private State state = State.Entering;
@@ -38,8 +41,8 @@ public class FoldTransition : MonoBehaviour
         if (state == State.Entering)
         {
             // 닫히는 애니메이션
-            topRect.anchoredPosition += (topOrigin - topRect.anchoredPosition) / 10f;
-            bottomRect.anchoredPosition += (bottomOrigin - bottomRect.anchoredPosition) / 10f;
+            topRect.anchoredPosition += (topOrigin - topRect.anchoredPosition) / speed;
+            bottomRect.anchoredPosition += (bottomOrigin - bottomRect.anchoredPosition) / speed;
 
             if (Vector2.Distance(topRect.anchoredPosition, topOrigin) < 0.5f)
             {
@@ -56,8 +59,8 @@ public class FoldTransition : MonoBehaviour
             Vector2 topTarget = topOrigin + new Vector2(0, screenHalfHeight);
             Vector2 bottomTarget = bottomOrigin - new Vector2(0, screenHalfHeight);
 
-            topRect.anchoredPosition += (topTarget - topRect.anchoredPosition) / 10f;
-            bottomRect.anchoredPosition += (bottomTarget - bottomRect.anchoredPosition) / 10f;
+            topRect.anchoredPosition += (topTarget - topRect.anchoredPosition) / speed;
+            bottomRect.anchoredPosition += (bottomTarget - bottomRect.anchoredPosition) / speed;
 
             if (Vector2.Distance(topRect.anchoredPosition, topTarget) < 0.5f)
             {
@@ -69,7 +72,7 @@ public class FoldTransition : MonoBehaviour
     IEnumerator DoSceneChange()
     {
         // 씬 로딩
-        if (!string.IsNullOrEmpty(global.mapChange))
+        if (!string.IsNullOrEmpty(global.mapChange) && isRealMove==true)
         {
             AsyncOperation op = SceneManager.LoadSceneAsync(global.mapChange);
             yield return op; // 로딩 완료까지 대기

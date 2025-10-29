@@ -11,7 +11,7 @@ public class PaperUIElement : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     [Header("말풍선 나오게 하기")]
     public SpeechBubble speechBubble;
 
-    [SerializeField] public int stageNum = 0;
+    int stageNum = 0;
 
     void Start()
     {
@@ -33,7 +33,7 @@ public class PaperUIElement : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (global.stage < stageNum)
+        if (global.stage != stageNum)
         {
             return;
         }

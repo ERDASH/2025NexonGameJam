@@ -130,9 +130,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveCar: {fileID: 35828038455109133, guid: 6240d7112b85a934f901ea6f4775f6dd, type: 3}
+  rushHourCar: {fileID: 1382696216265845617, guid: 846abd2fc7b687d47bd2f31f4f9b6c39, type: 3}
   sensorPrefab: {fileID: 5001656970259520164, guid: b81cbeabdb0760442a06f2d2b136389b, type: 3}
   blockPrefab: {fileID: 7384676245237150884, guid: 171d3687f7171ad41884d02e2c57596d, type: 3}
   previewPrefab: {fileID: 7384676245237150884, guid: 171d3687f7171ad41884d02e2c57596d, type: 3}
+  playerPrefab: {fileID: 0}
 --- !u!1 &5800403488390328634
 GameObject:
   m_ObjectHideFlags: 0

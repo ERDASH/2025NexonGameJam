@@ -243,8 +243,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6776172edf47f00468a1fa1765c9005b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bgmSlider: {fileID: 5953738964073304071}
-  sfxSlider: {fileID: 2793164589023236706}
+  bgmSlider: {fileID: 2793164589023236706}
+  sfxSlider: {fileID: 5953738964073304071}
   rankClearBtn: {fileID: 3634050223784165090}
   stageClearBtn: {fileID: 2756960072820400093}
 --- !u!1 &2276602076890510965
@@ -835,7 +835,7 @@ GameObject:
   - component: {fileID: 415190985595220659}
   - component: {fileID: 2793164589023236706}
   m_Layer: 5
-  m_Name: VFXSlider
+  m_Name: BGMSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -860,7 +860,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 100, y: -255}
+  m_AnchoredPosition: {x: 100, y: -397.4}
   m_SizeDelta: {x: 573, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &2793164589023236706
@@ -1170,7 +1170,7 @@ GameObject:
   - component: {fileID: 6535416420477777047}
   - component: {fileID: 5953738964073304071}
   m_Layer: 5
-  m_Name: BGMSlider
+  m_Name: SFXSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1195,7 +1195,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 100, y: -397.4}
+  m_AnchoredPosition: {x: 100, y: -255}
   m_SizeDelta: {x: 573, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &5953738964073304071

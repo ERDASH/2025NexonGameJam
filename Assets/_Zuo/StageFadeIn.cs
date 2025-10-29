@@ -1,3 +1,30 @@
+/*
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class StageFadeIn_UI : MonoBehaviour
+{
+    public GameObject transitionPrefab;
+    public string sceneName;              // 버튼 클릭 시 이동할 씬 이름
+    public int stageSelect = 0;           // 현재 선택된 스테이지
+
+
+    public void ButtonStageClick()
+    {
+
+        global.mapChange = sceneName;
+        global.stageNow = stageSelect;
+
+        if (!string.IsNullOrEmpty(global.mapChange))
+        {
+            Instantiate(transitionPrefab);
+        }
+
+
+    }
+}
+*/
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -69,17 +96,6 @@ public class StageFadeIn_UI : MonoBehaviour
             Instantiate(transitionPrefab);
         }
 
-        /*
 
-        if (!string.IsNullOrEmpty(sceneName))
-        {
-            SceneManager.LoadScene(sceneName);
-            global.stageNow = stageSelect;
-
-        }
-        else
-        {
-            Debug.LogWarning("이동할 씬 이름이 설정되지 않았습니다.");
-        }*/
     }
 }

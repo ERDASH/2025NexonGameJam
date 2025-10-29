@@ -46,7 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90787422e1541284faa50503a7b17c7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  A: {fileID: 3335471743480523966, guid: c3ddc7169ec748641b6887b2e282bdd4, type: 3}
+  GameStageBlockController: {fileID: 3335471743480523966, guid: c3ddc7169ec748641b6887b2e282bdd4, type: 3}
+  rushHourCarPrefab: {fileID: 1382696216265845617, guid: 846abd2fc7b687d47bd2f31f4f9b6c39, type: 3}
+  rushHourCarNumber: 0
 --- !u!212 &2971755114617428970
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -111,3 +113,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07091e27b38d059498ffeababe3234ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPreviewBlock: 0

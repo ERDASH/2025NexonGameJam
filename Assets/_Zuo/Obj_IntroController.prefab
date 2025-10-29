@@ -1214,3 +1214,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a17cbf08ef6c5e9408b76ecc02ae8669, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  transitionPrefab: {fileID: 2587672769592936759, guid: cd9ef662ef5356c42a451cbfcd372976, type: 3}

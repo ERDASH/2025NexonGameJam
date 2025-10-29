@@ -48,21 +48,24 @@ public class TitleController : MonoBehaviour
         if (canvasHowBtn != null) canvasHowBtn.SetActive(false);
 
         if (sprTitleLogo != null)
+        {
+            sprTitleLogo.transform.localScale = Vector3.zero;
             StartCoroutine(PopInLogo());
+        }
 
         UpdateImage();
     }
 
     public void ButtonHowClick()
     {
-        if (canvasHow != null && canvasHowBtn != null && canvasTitleBtn != null)
+        if (canvasHow != null/* && canvasHowBtn != null && canvasTitleBtn != null*/)
         {
             canvasHow.SetActive(true);
             canvasHowBtn.SetActive(true);
             canvasTitleBtn.SetActive(false);
 
             StartCoroutine(FadeInAndDropUI(canvasHow));
-            StartCoroutine(FadeInAndDropUI(canvasHowBtn));
+            //            StartCoroutine(FadeInAndDropUI(canvasHowBtn));
         }
         else
         {
@@ -89,7 +92,7 @@ public class TitleController : MonoBehaviour
 
 
         void Update()
-    {
+        {
             /*
         if (Input.GetKeyDown(KeyCode.A))
         {
@@ -103,8 +106,8 @@ public class TitleController : MonoBehaviour
             }
         }
         */
+        }
     }
-}
 
     public void OnClickNext()
     {
@@ -157,6 +160,10 @@ public class TitleController : MonoBehaviour
         CanvasGroup group = target.GetComponent<CanvasGroup>();
         if (group == null) group = target.AddComponent<CanvasGroup>();
 
+        // ✨ 애니메이션 시작 전 — 클릭 막기
+        group.interactable = false;
+        group.blocksRaycasts = false;
+
         RectTransform rt = target.GetComponent<RectTransform>();
         if (rt == null)
         {
@@ -182,7 +189,12 @@ public class TitleController : MonoBehaviour
 
         group.alpha = 1f;
         rt.anchoredPosition = endPos;
+
+        // ✨ 등장 애니메이션 끝난 후 — 클릭 가능하게
+        group.interactable = true;
+        group.blocksRaycasts = true;
     }
+
 
 
     IEnumerator PopInLogo()
@@ -190,7 +202,7 @@ public class TitleController : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
         Transform logo = sprTitleLogo.transform;
 
-        Vector3 baseScale = Vector3.one ; // 실제 크기
+        Vector3 baseScale = Vector3.one; // 실제 크기
         logo.localScale = Vector3.zero;
 
         float duration = 0.6f;

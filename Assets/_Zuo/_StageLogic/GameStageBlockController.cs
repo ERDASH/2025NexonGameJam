@@ -1,13 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
+using static Unity.Collections.AllocatorManager;
 
 public class GameStageBlockController : MonoBehaviour
 {
 
     public GameObject moveCar;
-
+    public GameObject rushHourCar;
     public GameObject sensorPrefab, blockPrefab, previewPrefab;
+    public GameObject playerPrefab;
+
+    // Grid 사이즈 및 간격 조절
     private float cellSize = 0.88f;
     private float gridSpacingX = 0.68f;
     private float gridSpacingY = 0f;
@@ -15,14 +19,12 @@ public class GameStageBlockController : MonoBehaviour
     private float gridOriginOffsetY = -3.5f;
     private int gridsPerRow = 3;
 
-
+    // 키보드 입력 관련
     private float moveDelay = 0.2f; // 키를 꾹 눌렀을 때 첫 지연 시간
     private float moveRepeatRate = 0.05f; // 그 이후 반복 간격
     private float moveTimer = 0f;
     private int moveDirection = 0; // -1 = 왼쪽, 1 = 오른쪽
     private bool isMoving = false;
-
-    public GameObject playerPrefab;
 
     private Sensor[,] sensors1 = new Sensor[4, 4];
     private Sensor[,] sensors2 = new Sensor[4, 4];
@@ -40,24 +42,133 @@ public class GameStageBlockController : MonoBehaviour
 
     private float carSpawnTimer = 0f;
     private bool isGameStart = false;
+    public int RealStart = 0;
+    public bool infiniteModeDelay = false;
 
-    private int RealStart = 0;
+    private int rushHourCarRandom = 0;
+    private int[] rushHourCarList = new int[10];
+
 
 
     enum BlockType { OneByOne, OneByTwo, OneByFour, TwoByTwo }
     private BlockType currentBlockType;
 
-    void Start() => CreateGrids();
+    void Start()
+    {
+        CreateGrids();
+    }
 
-    //    private GameObject existingCar = GameObject.FindWithTag("Car");
+
+
+
+    public void FunctionRushHourInit()
+    {
+        StageController stageCtrl = FindObjectOfType<StageController>();
+        if (stageCtrl != null && stageCtrl.rushHourMode)
+        {
+            GameObject[] rushCars = GameObject.FindGameObjectsWithTag("CarRushHour");
+            if (rushCars.Length < 10)
+            {
+                // 0번이 사라졌다고 가정 → 모든 차량을 우측으로 한 칸씩 당기기
+                // 즉, arr[1] → arr[0], arr[2] → arr[1], ..., arr[9]는 비게 됨
+                for (int i = 0; i < rushHourCarList.Length - 1; i++)
+                {
+                    rushHourCarList[i] = rushHourCarList[i + 1];
+                }
+
+                // 맨 오른쪽(=가장 왼쪽 위치에 해당하는) 9번 자리에 랜덤 차량 추가
+
+                int rushHourCarRandom = SpawnBlockRandom(); // Random.Range(11, 16);
+                rushHourCarList[rushHourCarList.Length - 1] = rushHourCarRandom;
+
+                // 스폰 위치 계산
+                Vector2 spawnPos;
+
+                if (rushCars.Length == 0)
+                {
+                    // 맵에 rushCars가 하나도 없으면 기본 위치에 생성
+                    spawnPos = new Vector2(-10f, 2.3f);
+                }
+                else
+                {
+                    // rushCars 중 "가장 왼쪽(x가 가장 작은)" 차량 찾기
+                    GameObject leftMostCar = rushCars[0];
+                    float leftMostX = leftMostCar.transform.position.x;
+
+                    for (int i = 1; i < rushCars.Length; i++)
+                    {
+                        if (rushCars[i].transform.position.x < leftMostX)
+                        {
+                            leftMostCar = rushCars[i];
+                            leftMostX = rushCars[i].transform.position.x;
+                        }
+                    }
+
+                    // 맨 왼쪽 차량보다 더 왼쪽(-2.5f) 지점에 새 차량 스폰
+                    spawnPos = new Vector2(leftMostX - 3f, 2.3f);
+                }
+
+                // 새 차량 생성
+                DestroyPreviewBlock();
+                GameObject newCar = Instantiate(rushHourCar, spawnPos, Quaternion.identity);
+
+                // 차량 정보 세팅
+                MoveCarController carScript = newCar.GetComponent<MoveCarController>();
+                if (carScript != null)
+                {
+                    carScript.rushHourCarNumber = rushHourCarRandom;
+                }
+
+                SpawnBlock();
+            }
+
+            // 차량 당기기가 모두 완료되면, 현재 플레이어가 관여하는 차량을 맨 우측 차량으로 선택
+            global.carNow = rushHourCarList[0];
+        }
+        else
+        {
+            for (int i = 0; i < rushHourCarList.Length; i++)
+            {
+                rushHourCarList[i] = -1;
+            }
+        }
+    }
+
+    public void FunctionRushHourReload()
+    {
+        StageController stageCtrl = FindObjectOfType<StageController>();
+        if (stageCtrl != null && stageCtrl.rushHourMode)
+        {
+            //DestroyPreviewBlock();
+            // 맵 밖에 나간 것에 대해서는 잔상이 존재함.
+            // 스페이스바로 날린 것은 Preview 가 즉시 사라지지 않음.
+            // 이 부분 수정 필요
+        }
+    }
+
 
     public void FunctionDestoryBlock()
     {
+
+        Debug.Log("이건작동되나111");
+
         //   ClearCurrentBlock();
-        GameObject existingCar = GameObject.FindWithTag("Car");
-        if (existingCar != null)
+
+        for (var i = 0; i < 10; i++)
         {
-            Destroy(existingCar);
+            GameObject existingCar = GameObject.FindWithTag("Car");
+            if (existingCar != null)
+            {
+                //Debug.Log("why?");
+                Destroy(existingCar);
+            }
+
+
+            GameObject existingCar2 = GameObject.FindWithTag("CarRushHour");
+            if (existingCar2 != null)
+            {
+                Destroy(existingCar2);
+            }
         }
         carSpawnTimer = 0;
 
@@ -65,16 +176,32 @@ public class GameStageBlockController : MonoBehaviour
 
     public void FunctionReloadBlock()
     {
+        Debug.Log("이건작동되나222");
         global.CarPass = 1;
-        // 기존 Car 오브젝트 삭제
-        GameObject existingCar = GameObject.FindWithTag("Car");
+
+
+        GameObject existingCar = GameObject.FindWithTag("Block");
         if (existingCar != null)
         {
-            Destroy(existingCar);
+            FallingBlock fb = existingCar.GetComponent<FallingBlock>();
+            if (fb != null && fb.isPreviewBlock == true)
+            {
+                Destroy(existingCar);
+            }
         }
+
+        GameObject existingCar2 = GameObject.FindWithTag("CarRushHour");
+        if (existingCar2 != null)
+        {
+            Destroy(existingCar2);
+        }
+
         carSpawnTimer = 0;
 
-        // currentBlock 삭제 또는 투명화
+
+        // --------------------------------------------------------
+        // CurrentBlock 삭제 및 투명화 로직
+        // --------------------------------------------------------
         if (currentBlock != null)
         {
             foreach (Transform child in currentBlock.transform)
@@ -91,7 +218,6 @@ public class GameStageBlockController : MonoBehaviour
             currentBlock = null;
         }
 
-        // previewBlock 삭제 또는 투명화
         if (previewBlock != null)
         {
             foreach (Transform child in previewBlock.transform)
@@ -115,44 +241,64 @@ public class GameStageBlockController : MonoBehaviour
             c.a = 0f;
             previewRenderer.color = c;
         }
+        // --------------------------------------------------------
+
+        FunctionRushHourReload();
     }
 
     public void FunctionSpawnBlock()
     {
-        //   ClearCurrentBlock();
+
+        StageController stageCtrl = FindObjectOfType<StageController>();
+        ClearCurrentBlock();
         if (global.isGameOver == 0)
         {
             global.CarPass = 0;
             carSpawnTimer = 0;
             isGameStart = true;
             SpawnBlock();
-            if (moveCar != null)
-            {
-                Instantiate(moveCar, new Vector2(-10f, 2.3f), Quaternion.identity);
-            }
         }
     }
 
     void CarExistCheck()
     {
         GameObject existingCar = GameObject.FindWithTag("Car");
+        StageController stageCtrl = FindObjectOfType<StageController>();
+
+
+        // 🔸 러시아워 모드면 대기 없이 즉시 스폰
+        if (stageCtrl != null && stageCtrl.rushHourMode && RealStart == 1)
+        {
+
+            // 20251022 001 ########################################################
+            DestroyPreviewBlock();
+            GameObject[] rushCars = GameObject.FindGameObjectsWithTag("CarRushHour");
+            if (rushCars.Length < 10)
+            {
+                FunctionSpawnBlock();
+            }
+            // 20251022 001 ########################################################
+
+        }
         // 씬에 Car 태그 오브젝트가 없다면 타이머 작동
-        if (existingCar == null && RealStart == 1)
+        else if (existingCar == null && RealStart == 1)
         {
             carSpawnTimer += Time.deltaTime;
 
+
             if (carSpawnTimer >= global.carSpawnSpeed)
             {
-                FunctionSpawnBlock(); // 원하는 생성 함수 호출
-                carSpawnTimer = 0f; // 타이머 초기화
+                FunctionSpawnBlock();
+                carSpawnTimer = 0f;
             }
         }
         else
         {
-            // Car가 존재하면 타이머 리셋
             carSpawnTimer = 0f;
         }
     }
+
+
 
     void StartCheck()
     {
@@ -161,107 +307,31 @@ public class GameStageBlockController : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(global.carSpawnSpeedFirst);
-        //   Debug.Log(previewBlock);
-        if (isGameStart == true)
+        //------------------------------------
+        // Debug 
+        //------------------------------------
+        /*
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            CheckAndClearLineBlock(3);
+        }
+
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            Debug.Log("현재 컨트롤할 차량 : " + global.carNow);
+        }
+        */
+        //------------------------------------
+
+        if (isGameStart == true && infiniteModeDelay == false)
         {
             CarExistCheck();
+            FunctionRushHourInit();
+            UpdateKeyInput();
+            UpdateBlock();
+            UpdatePreview();
         }
-
         Invoke("StartCheck", global.carSpawnSpeedFirst);
-
-        //if (Input.GetKeyDown(KeyCode.A) && currentBlock == null) SpawnBlock();
-
-        if (global.isGameOver == 0)
-        {
-            //   if (Input.GetKeyDown(KeyCode.S)) { ClearCurrentBlock(); SpawnBlock(); }
-            if (currentBlock == null) return;
-
-            //     if (global.CarPass == 0)
-            // {
-
-            /*
-                if (Input.GetKeyDown(KeyCode.LeftArrow) && pos.x > 0) pos.x -= 1;
-                if (Input.GetKeyDown(KeyCode.RightArrow) && pos.x < (gridsPerRow * 4 - 1)) pos.x += 1;
-                */
-
-            // 누르는 순간: 방향 설정 + 즉시 이동
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                moveDirection = -1;
-                moveTimer = moveDelay;
-                TryMoveLeft();
-                isMoving = true;
-                SoundManager.Instance.PlaySFX("LeftRightUpArrow");
-            }
-            else if (Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                moveDirection = 1;
-                moveTimer = moveDelay;
-                TryMoveRight();
-                isMoving = true;
-                SoundManager.Instance.PlaySFX("LeftRightUpArrow");
-            }
-            else if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
-            {
-                moveDirection = 0;
-                isMoving = false;
-            }
-
-            /*
-            if (Input.GetKeyDown(KeyCode.UpArrow) && currentBlockType == BlockType.TwoByTwo)
-            {
-                rotation = (rotation == 0) ? 90 : 0;
-            }
-            */
-            if (Input.GetKeyDown(KeyCode.UpArrow) && currentBlockType != BlockType.TwoByTwo)
-            {
-                rotation = (rotation == 0) ? 270 : 0;
-            }// rotation = (rotation + 90) % 360;
-
-
-            if (Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                SoundManager.Instance.PlaySFX("DownArrow");
-                if (global.isBadCar == true)
-                {
-
-                    PlayerFSM PlayerScr = playerPrefab.GetComponent<PlayerFSM>();
-                    if (PlayerScr != null)
-                    {
-                        PlayerScr.CheckFail();
-                    }
-
-
-                    GameManager.Instance.AddLife(-100);
-                    //GameManager.Instance.AddScore(-100);
-                    FunctionReloadBlock();
-                    FunctionDestoryBlock();
-
-                }
-                else
-                {
-                    PlaceBlock();
-                }
-            }
-            //  }
-        }
-        UpdateBlock();
-        UpdatePreview();
-
-
-        // 연속 입력 처리
-        if (isMoving && moveDirection != 0)
-        {
-            moveTimer -= Time.deltaTime;
-            if (moveTimer <= 0f)
-            {
-                if (moveDirection == -1) TryMoveLeft();
-                else if (moveDirection == 1) TryMoveRight();
-                moveTimer = moveRepeatRate; // 반복 간격 재설정
-            }
-        }
-
 
     }
 
@@ -298,6 +368,7 @@ public class GameStageBlockController : MonoBehaviour
             float offsetY = g * gridSpacingY;
 
             for (int x = 0; x < 4; x++)
+            {
                 for (int y = 0; y < 4; y++)
                 {
                     Vector2 pos = new Vector2(
@@ -306,7 +377,153 @@ public class GameStageBlockController : MonoBehaviour
                     GameObject s = Instantiate(sensorPrefab, pos, Quaternion.identity);
                     sensors[x, y] = s.GetComponent<Sensor>();
                 }
+            }
         }
+    }
+
+    void UpdateKeyInput()
+    {
+
+        if (global.isGameOver == 0)
+        {
+
+            if (currentBlock == null)
+            {
+                isMoving = false;
+                moveDirection = 0;
+                return;
+            }
+
+
+
+            // 누르는 순간: 방향 설정 + 즉시 이동
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                moveDirection = -1;
+                moveTimer = moveDelay;
+                TryMoveLeft();
+                isMoving = true;
+                SoundManager.Instance.PlaySFX("LeftRightUpArrow");
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                moveDirection = 1;
+                moveTimer = moveDelay;
+                TryMoveRight();
+                isMoving = true;
+                SoundManager.Instance.PlaySFX("LeftRightUpArrow");
+            }
+            else if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
+            {
+                moveDirection = 0;
+                isMoving = false;
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.UpArrow) && currentBlockType != BlockType.TwoByTwo)
+            {
+                rotation = (rotation == 0) ? 270 : 0;
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+
+                SoundManager.Instance.PlaySFX("DownArrow");
+
+                StageController stageCtrl = FindObjectOfType<StageController>();
+                int gridIndex = Mathf.FloorToInt(pos.x / 4); // 현재 블록이 속한 그리드 (0~2)
+
+                // 💡 기본 badcar 처리
+                bool isBad = global.isBadCar;
+
+                // 🚦 trafficLightMode일 경우, 배치 가능 차량 확인
+                if (stageCtrl != null && stageCtrl.trafficLightMode)
+                {
+                    int requiredColor = stageCtrl.trafficLightLine[gridIndex]; // 1=빨강, 2=파랑, 3=초록
+                    int carColor = global.carNow switch
+                    {
+                        15 => 1, // 빨강
+                        13 => 2, // 파랑
+                        14 => 3, // 초록
+                        _ => 0
+                    };
+
+                    // ❌ 색이 다르면 잘못된 배치로 처리
+                    if (requiredColor != 0 && requiredColor != carColor)
+                    {
+                        isBad = true;
+                        Debug.Log($"[TrafficLightMode] ❌ 잘못된 차량 배치! (필요={requiredColor}, 현재={carColor})");
+                    }
+                    else
+                    {
+                        Debug.Log($"[TrafficLightMode] ✅ 올바른 차량 배치! (Grid {gridIndex + 1}, 색상 {carColor})");
+                    }
+                }
+
+                if (isBad)
+                {
+                    PlayerFSM PlayerScr = playerPrefab.GetComponent<PlayerFSM>();
+                    if (PlayerScr != null)
+                        PlayerScr.CheckFail();
+
+                    GameManager.Instance.AddLife(-100);
+                    FunctionReloadBlock();
+                    FunctionDestoryBlock();
+                }
+                else
+                {
+                    PlaceBlock();
+                }
+
+                /*
+                SoundManager.Instance.PlaySFX("DownArrow");
+                if (global.isBadCar == true)
+                {
+
+                    PlayerFSM PlayerScr = playerPrefab.GetComponent<PlayerFSM>();
+                    if (PlayerScr != null)
+                    {
+                        PlayerScr.CheckFail();
+                    }
+
+
+                    GameManager.Instance.AddLife(-100);
+                    //GameManager.Instance.AddScore(-100);
+                    FunctionReloadBlock();
+                    FunctionDestoryBlock();
+
+                }
+                else
+                {
+                    PlaceBlock();
+                }
+                */
+            }
+
+
+            if (!Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+            {
+                isMoving = false;
+                moveDirection = 0;
+                return;
+            }
+
+
+
+            // 연속 입력 처리
+            if (isMoving && moveDirection != 0)
+            {
+                moveTimer -= Time.deltaTime;
+                if (moveTimer <= 0f)
+                {
+                    if (moveDirection == -1) TryMoveLeft();
+                    else if (moveDirection == 1) TryMoveRight();
+                    moveTimer = moveRepeatRate; // 반복 간격 재설정
+                }
+            }
+        }
+
     }
 
     void UpdateBlock()
@@ -396,6 +613,9 @@ public class GameStageBlockController : MonoBehaviour
 
     void PlaceBlock()
     {
+
+
+
         Vector2 previewPos = pos;
         while (previewPos.y > 0 && CanPlaceBlock(GetBlockPositions(new Vector2(previewPos.x, previewPos.y - 1))))
             previewPos.y--;
@@ -506,7 +726,10 @@ public class GameStageBlockController : MonoBehaviour
                 }
 
                 // currentBlock은 그냥 제거
-                if (currentBlock != null) Destroy(currentBlock);
+                if (currentBlock != null)
+                {
+                    Destroy(currentBlock);
+                }
 
                 currentBlock = null;
                 previewBlock = null;
@@ -549,35 +772,6 @@ public class GameStageBlockController : MonoBehaviour
                     for (int x = 0; x < 4; x++)
                         grid[x, y].isOccupied = false;
 
-                /*
-                foreach (GameObject b in blockList)
-                {
-                    if (b != null)
-                    {
-                        // Rigidbody2D 추가 및 설정
-                        if (b.GetComponent<Rigidbody2D>() == null)
-                        {
-                            Rigidbody2D rb = b.AddComponent<Rigidbody2D>();
-                            rb.gravityScale = 3f;
-                            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-                        }
-
-                        // Collider2D 추가 및 isTrigger 설정
-                        Collider2D col = b.GetComponent<Collider2D>();
-                        if (col == null)
-                        {
-                            col = b.AddComponent<BoxCollider2D>();
-                        }
-                        col.isTrigger = true; // 충돌 무시
-
-                        // FallingBlock 스크립트 추가
-                        if (b.GetComponent<FallingBlock>() == null)
-                        {
-                            b.AddComponent<FallingBlock>();
-                        }
-                    }
-                }
-                */
                 foreach (GameObject b in blockList)
                 {
                     if (b != null)
@@ -654,30 +848,160 @@ public class GameStageBlockController : MonoBehaviour
         return basePos;
     }
 
+    public void DestroyPreviewBlock()
+    {
+        GameObject[] blocks = GameObject.FindGameObjectsWithTag("Block");
+
+        foreach (GameObject block in blocks)
+        {
+            if (block == null) continue;
+
+            FallingBlock fb = block.GetComponent<FallingBlock>();
+            if (fb == null) continue;
+
+            // ✅ currentBlock 또는 previewBlock 은 건너뛰기
+            if (block == currentBlock || block == previewBlock)
+                continue;
+
+            bool shouldDestroy = false;
+
+            // 🔍 자식들 포함한 모든 SpriteRenderer 검사
+            SpriteRenderer[] renderers = block.GetComponentsInChildren<SpriteRenderer>();
+            foreach (SpriteRenderer sr in renderers)
+            {
+                if (sr == null) continue;
+
+                float alpha = sr.color.a;
+                if (alpha > 0f && alpha < 0.9f)
+                {
+                    shouldDestroy = true;
+                    break;
+                }
+            }
+
+            // 조건에 맞는 블록 제거
+            if (shouldDestroy)
+            {
+                Destroy(block);
+                Debug.Log($"Destroyed preview-like block: {block.name}");
+            }
+        }
+    }
+
+
+
+
+    int SpawnBlockRandom()
+    {
+        int randReal = Random.Range(0, 100);
+        int[] choice_car = { 1, 12, 13, 14, 15, 21, 31 };
+
+        StageController stageCtrl = FindObjectOfType<StageController>();
+        if (stageCtrl != null && stageCtrl.trafficLightMode)
+        {
+            // trafficLightMode가 켜져 있을 때는 반드시 12~15만 선택
+            choice_car = new int[] { 12, 13, 14, 15, 16, 17 };
+            Debug.Log("[TrafficLightMode] 전용 차량 선택 모드 ON (12~15만 등장)");
+        }
+
+
+        return choice_car[Random.Range(0, choice_car.Length)];
+
+
+    }
+
+
     void SpawnBlock()
     {
         global.isBadCar = false;
-
         int randReal = Random.Range(0, 100);
         int[] choice_car = { 1, 12, 13, 14, 15, 21, 31 };
+        StageController stageCtrl = FindObjectOfType<StageController>();
+
+        // ----------------------------------------------
+        // DEBUG 용 코드
+        // ----------------------------------------------
+
+        // 작동시 하단의 Block 중 Preview 블럭만 골라서 제거
+        DestroyPreviewBlock();
+
+        // ----------------------------------------------
+
+
+
+        // ----------------------------------------------
+        // 만약 신호등 모드이면 특정한 차만나오게
+        // ----------------------------------------------
+        if (stageCtrl != null && stageCtrl.trafficLightMode)
+        {
+            // trafficLightMode가 켜져 있을 때는 반드시 12~15만 선택
+            choice_car = new int[] { 12, 13, 14, 15, 16, 17 };
+            Debug.Log("[TrafficLightMode] 전용 차량 선택 모드 ON (12~15만 등장)");
+        }
+        // ----------------------------------------------
+
+
+
+
+        // ----------------------------------------------
+        // 소환할 차 선택
         global.carNow = choice_car[Random.Range(0, choice_car.Length)];
 
         if (randReal < global.carBadPer)
         {
-            if (global.stageNow == 1) { int[] choice_car2 = { 2, 3, 11 }; global.carNow = choice_car2[Random.Range(0, choice_car2.Length)]; }
-            if (global.stageNow == 2) { int[] choice_car2 = { 2, 3, 11 }; global.carNow = choice_car2[Random.Range(0, choice_car2.Length)]; }
-            if (global.stageNow == 3) { int[] choice_car2 = { 2, 3, 11 }; global.carNow = choice_car2[Random.Range(0, choice_car2.Length)]; }
-            if (global.stageNow == 4) { int[] choice_car2 = { 2, 3, 11 }; global.carNow = choice_car2[Random.Range(0, choice_car2.Length)]; }
+            if (stageCtrl != null && stageCtrl.trafficLightMode)
+            {
+                // 신호등 모드일 경우 특수블럭 처리 (현재 비워둠)
+                // 신호등 외 색상인 것들 리스트 넣어서 처리하면 됨.
+            }
+            else
+            {
+                // 일반 모드의 경우 특수블럭 처리
+                if (global.stageNow == 1) { int[] choice_car2 = { 2, 3, 11 }; global.carNow = choice_car2[Random.Range(0, choice_car2.Length)]; }
+                if (global.stageNow == 2) { int[] choice_car2 = { 2, 3, 11 }; global.carNow = choice_car2[Random.Range(0, choice_car2.Length)]; }
+                if (global.stageNow == 3) { int[] choice_car2 = { 2, 3, 11 }; global.carNow = choice_car2[Random.Range(0, choice_car2.Length)]; }
+                if (global.stageNow == 4) { int[] choice_car2 = { 2, 3, 11 }; global.carNow = choice_car2[Random.Range(0, choice_car2.Length)]; }
+            }
         }
 
 
 
 
+        // 러시아워 모드 작동 시엔, moveCar 나오지 않게
+        // 그 이유는 RushHour 전용 MoveCar 을 생성할 것이기 때문
+        if (stageCtrl != null && stageCtrl.rushHourMode == false)
+        {
+            GameObject newCar = Instantiate(moveCar, new Vector2(-10f, 2.3f), Quaternion.identity);
+        }
+        else
+        {
+            global.carNow = rushHourCarList[0];
+        }
+        // ----------------------------------------------
+
+
+
+
+
+
+
+
+        // ----------------------------------------------
+        // 소환할 차의 하단이미지 세팅
+        // 각 값의 앖자리에 따라 1x1인지 2x1인지 4x1인지 2x2인지 판별
         int rand = (int)(global.carNow / 10);
         currentBlockType = (BlockType)rand;
 
         currentBlock = Instantiate(blockPrefab, GetWorldPosition(pos), Quaternion.identity);
         previewBlock = Instantiate(previewPrefab, GetWorldPosition(pos), Quaternion.identity);
+
+        var blockScript = previewBlock.GetComponent<FallingBlock>();
+        if (blockScript != null)
+        {
+            blockScript.isPreviewBlock = true;
+        }
+
+
 
         string activeName = currentBlockType switch
         {
@@ -685,21 +1009,19 @@ public class GameStageBlockController : MonoBehaviour
             BlockType.OneByTwo => "Block11",
             BlockType.OneByFour => "Block21",
             BlockType.TwoByTwo => "Block31",
-
-
             _ => ""
         };
 
         ActivateOnlyChild(currentBlock, activeName);
         ActivateOnlyChild(previewBlock, activeName);
 
-        // ▶ 프리뷰 렌더러 처리
+
         Transform previewChild = previewBlock.transform.Find(activeName);
         if (previewChild != null)
         {
             previewRenderer = previewChild.GetComponent<SpriteRenderer>();
             defaultColor = previewRenderer.color;
-            defaultColor.a = 1f;
+            defaultColor.a = 0.5f;
             previewRenderer.color = defaultColor;
         }
 
@@ -729,6 +1051,8 @@ public class GameStageBlockController : MonoBehaviour
                     13 => "car1x2_03",
                     14 => "car1x2_04",
                     15 => "car1x2_05",
+                    16 => "car1x2_06",
+                    17 => "car1x2_07",
                     21 => "car1x4_01",
                     31 => "car2x2_01",
                     _ => null
@@ -736,7 +1060,7 @@ public class GameStageBlockController : MonoBehaviour
 
                 if (!string.IsNullOrEmpty(spriteName))
                 {
-                    string path = $"_Res_Zuo/Res_Stage/Res_Stage_Car/grid/{spriteName}";
+                    string path = $"_Res_Zuo/Res_Stage/Res_Stage_Car/gird_new/{spriteName}";
                     Sprite newSprite = Resources.Load<Sprite>(path);
 
                     if (newSprite != null)
@@ -768,6 +1092,8 @@ public class GameStageBlockController : MonoBehaviour
                     13 => "car1x2_03",
                     14 => "car1x2_04",
                     15 => "car1x2_05",
+                    16 => "car1x2_06",
+                    17 => "car1x2_07",
                     21 => "car1x4_01",
                     31 => "car2x2_01",
                     _ => null
@@ -775,7 +1101,7 @@ public class GameStageBlockController : MonoBehaviour
 
                 if (!string.IsNullOrEmpty(spriteName))
                 {
-                    string path = $"_Res_Zuo/Res_Stage/Res_Stage_Car/grid/{spriteName}";
+                    string path = $"_Res_Zuo/Res_Stage/Res_Stage_Car/gird_new/{spriteName}";
                     Sprite newSprite = Resources.Load<Sprite>(path);
 
                     if (newSprite != null)
@@ -789,11 +1115,139 @@ public class GameStageBlockController : MonoBehaviour
                 }
             }
         }
+        // ----------------------------------------------
+
+
+
     }
+
+    public void ResetAllBlocks()
+    {
+        foreach (var obj in GameObject.FindGameObjectsWithTag("Block")) Destroy(obj);
+        foreach (var obj in GameObject.FindGameObjectsWithTag("Car")) Destroy(obj);
+        foreach (var obj in GameObject.FindGameObjectsWithTag("CarRushHour")) Destroy(obj);
+
+        ResetSensors();
+
+        blocks1.Clear();
+        blocks2.Clear();
+        blocks3.Clear();
+        currentBlock = null;
+        previewBlock = null;
+    }
+    void ResetSensors()
+    {
+        Sensor[] allSensors = FindObjectsOfType<Sensor>();
+        foreach (Sensor s in allSensors)
+        {
+            s.isOccupied = false;
+        }
+    }
+
+
 
     void ActivateOnlyChild(GameObject parent, string targetName)
     {
         foreach (Transform child in parent.transform)
             child.gameObject.SetActive(child.name == targetName);
     }
+
+
+
+    // ----------------------------------------------
+    // 라인 클리어 모드 관련 시스템
+    // ----------------------------------------------
+    public void CheckAndClearLineBlock(int destroyLine)
+    {
+
+        /*
+        생각. Block 을 제거하려는게 맞는지, 센서를 제거하려는건 아닌지
+        또한, 제거할때 Preview Block 은 제거하지 않아야한다.
+         
+         */
+
+
+        /*
+        if (destroyLine < 1 || destroyLine > 12)
+        {
+            Debug.LogWarning($"잘못된 destroyLine 값: {destroyLine}");
+            return;
+        }
+
+        int lineIndex = destroyLine - 1;
+        int gridIndex = lineIndex / 4;    // 어느 4x4 그리드인지 (0,1,2)
+        int localX = lineIndex % 4;       // 그리드 내부 X좌표
+
+        // 대상 그리드와 블록 리스트 선택
+        Sensor[,] targetGrid = gridIndex switch
+        {
+            0 => sensors1,
+            1 => sensors2,
+            2 => sensors3,
+            _ => null
+        };
+        List<GameObject> blockList = gridIndex switch
+        {
+            0 => blocks1,
+            1 => blocks2,
+            2 => blocks3,
+            _ => null
+        };
+        if (targetGrid == null || blockList == null) return;
+
+        // 🎯 1. 센서에서 실제로 켜진(isOccupied) 셀들 확인
+        List<Sensor> hitSensors = new List<Sensor>();
+        for (int y = 0; y < 4; y++)
+        {
+            if (targetGrid[localX, y].isOccupied)
+            {
+                hitSensors.Add(targetGrid[localX, y]);
+                targetGrid[localX, y].isOccupied = false; // 바로 비활성화
+            }
+        }
+
+        if (hitSensors.Count == 0)
+        {
+            Debug.Log($"라인 {destroyLine}: 센서에 블록 없음");
+            return;
+        }
+
+        // 🎯 2. 각 블록이 해당 센서 위치에 올라있는지 확인
+        foreach (GameObject b in new List<GameObject>(blockList))
+        {
+            if (b == null) continue;
+
+            Vector3 bPos = b.transform.position;
+
+            foreach (Sensor s in hitSensors)
+            {
+                // 블록 중심이 센서 근처에 있는지 체크 (좌표 차이 아주 미세하게)
+                if (Vector2.Distance(s.transform.position, bPos) < cellSize * 0.4f)
+                {
+                    // 💥 해당 블록 제거
+                    FallingBlock fb = b.GetComponent<FallingBlock>();
+                    if (fb != null) fb.FallOff();
+                    else Destroy(b);
+
+                    blockList.Remove(b);
+                    break; // 하나라도 맞으면 이 블록은 끝
+                }
+            }
+        }
+
+        // 🎵 효과 및 피드백
+        SoundManager.Instance.PlaySFX("TrackFail");
+        PlayerFSM playerScr = playerPrefab.GetComponent<PlayerFSM>();
+        if (playerScr != null)
+            playerScr.CheckFail();
+
+        Debug.Log($"라인 {destroyLine} 제거 완료 ✅");
+        */
+    }
+        
+    
+
 }
+
+
+

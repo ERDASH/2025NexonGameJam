@@ -1,28 +1,28 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 public class Sensor : MonoBehaviour
 {
     public bool isOccupied = false;
     public int gridX, gridY;
-    public Text sensorText;
+    public GameObject sensorGrid;
 
     void Start()
     {
-        UpdateText();
+        UpdateGrid();
     }
 
     private void Update()
     {
-        UpdateText();
+        UpdateGrid();
     }
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Block"))
         {
             isOccupied = true;
-            UpdateText();
+            UpdateGrid();
         }
     }
 
@@ -31,16 +31,52 @@ public class Sensor : MonoBehaviour
         if (other.CompareTag("Block"))
         {
             isOccupied = false;
-            UpdateText();
+            UpdateGrid();
         }
     }
 
-    void UpdateText()
+    public void UpdateGrid()
     {
-        if (sensorText != null)
+        if (sensorGrid != null)
         {
-            sensorText.text = isOccupied ? "" : "";
-            sensorText.color = isOccupied ? Color.red : Color.green;
+            sensorGrid.SetActive(isOccupied);
         }
     }
+
+
+
+    /*
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.CompareTag("Block"))
+        {
+            FallingBlock block = other.GetComponent<FallingBlock>();
+
+            if (block != null)
+            {
+                // 🔹 블록이 떨어지는 중이면 센서 비활성화
+                if (block.ImFalling)
+                {
+                    isOccupied = false;
+                }
+                else
+                {
+                    isOccupied = true;
+                }
+            }
+            else
+            {
+                // FallingBlock 컴포넌트 없으면 일반 블록으로 간주
+                isOccupied = true;
+            }
+
+            UpdateGrid();
+        }
+    }
+    */
+
+
+
+
+
 }

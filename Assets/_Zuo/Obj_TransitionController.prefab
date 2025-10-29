@@ -47,7 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topRect: {fileID: 6155902731328247463}
   bottomRect: {fileID: 8314409863278895207}
-  waitBeforeOpen: 1.5
+  waitBeforeOpen: 0.2
+  isRealMove: 1
 --- !u!1 &3642417079721939487
 GameObject:
   m_ObjectHideFlags: 0

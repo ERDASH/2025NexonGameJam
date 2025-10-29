@@ -18,6 +18,7 @@ public static class global
 
     public static string mapChange = "";
 
+    public static int StageMap=0;
 
     public static int carNow = 0;
 }
@@ -41,6 +42,10 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            //Screen.SetResolution(1280, 720, false);
+            QualitySettings.vSyncCount = 0; // VSync 비활성화 (직접 FPS 제한)
+            Application.targetFrameRate = 60; // FPS를 60으로 고정
+            Time.timeScale = 1f;
         }
         else
         {

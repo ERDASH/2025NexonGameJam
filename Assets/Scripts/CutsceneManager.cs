@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
+//using UnityEngine.SceneManagement;
 
 public enum CutsceneActionType
 {
@@ -50,7 +50,7 @@ public class CutsceneManager : MonoBehaviour
                 else
                     element.PlayExitAnimation();
             }
-            Debug.Log("컷씬 진행 중: "+ count);
+            Debug.Log("컷씬 진행 중: " + count);
 
             yield return new WaitUntil(() => completedCount >= group.elements.Count);
         }
@@ -62,6 +62,6 @@ public class CutsceneManager : MonoBehaviour
         if (deactivateOnEnd)
             gameObject.SetActive(false);
 
-        SceneManager.LoadScene("Scene_Title");
+     //   SceneManager.LoadScene("Scene_Title");
     }
 }
