@@ -29,8 +29,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.EventSystems;
 
-public class StageFadeIn_UI : MonoBehaviour
+public class StageFadeIn_UI : MonoBehaviour , IPointerEnterHandler
 {
     public GameObject transitionPrefab;
     public float startDelay = 0f;         // 시작 지연 시간
@@ -97,5 +98,14 @@ public class StageFadeIn_UI : MonoBehaviour
         }
 
 
+
+    }
+
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        global.stageNowTemp = stageSelect;
+        // 디버그용 로그
+        Debug.Log($"[Hover] global.stageNowTemp = {global.stageNowTemp}");
     }
 }

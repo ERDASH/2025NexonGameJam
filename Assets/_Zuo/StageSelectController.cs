@@ -21,8 +21,17 @@ public class StageSelectController : MonoBehaviour
     public Sprite SpriteStageCleared;  // 클리어된 스테이지 스프라이트
     public Sprite SpriteStageLocked;  // 잠금된 스테이지 스프라이트 (추가적으로 필요할 경우)
 
+    public bool InfiniteSheetToggle = false;
+    public GameObject InfiniteSheetObject;
+    public GameObject InfiniteSheetAlpha;
+
+    [Header("스테이지 미리보기 이미지 관련")]
+    public Image PreviewImage;                  // 표시할 이미지 오브젝트
+    public Sprite[] StagePreviewSprites = new Sprite[10]; // 드래그 앤 드롭할 미리보기 이미지 배열
+
     void Start()
     {
+        global.stageNowTemp = 0;
         SoundManager.Instance.PlayBGM("StageSelect");
         SetStageButtons(global.stage-1);  // global.stage에 맞춰 버튼을 활성화
     }
@@ -40,7 +49,7 @@ public class StageSelectController : MonoBehaviour
         }
         //------------------------------------------
 
-
+        // === WorkSheet 애니메이션 ===
         Vector3 pos = WorkSheetObject.transform.position;
         Image img = WorkSheelAlpha.GetComponent<Image>();
         Color c = img.color;
@@ -57,7 +66,79 @@ public class StageSelectController : MonoBehaviour
         }
         img.color = c;
         WorkSheetObject.transform.position = pos;
+
+
+        // === InfiniteSheet 애니메이션 ===
+        Vector3 pos2 = InfiniteSheetObject.transform.position;
+        Image img2 = InfiniteSheetAlpha.GetComponent<Image>();
+        Color c2 = img2.color;
+
+        if (InfiniteSheetToggle)
+        {
+            pos2.y += (Screen.height / 2 - pos2.y) / 5f;
+            c2.a += (0.6f - c2.a) / 5f;
+        }
+        else
+        {
+            pos2.y += ((Screen.height * 3) / 2 - pos2.y) / 5f;
+            c2.a += (0f - c2.a) / 5f;
+        }
+        img2.color = c2;
+        InfiniteSheetObject.transform.position = pos2;
+
+        UpdatePreviewImage();
     }
+
+
+    void UpdatePreviewImage()
+    {
+     //   if (PreviewImage == null || StagePreviewSprites.Length == 0)
+       //     return;
+
+        Sprite targetSprite = StagePreviewSprites[0]; // 기본 이미지
+
+        if (global.stageNowTemp == 5)
+        {
+            if (StagePreviewSprites.Length > 1)
+                targetSprite = StagePreviewSprites[1];
+        }
+        else if (global.stageNowTemp == 10)
+        {
+            if (StagePreviewSprites.Length > 2)
+                targetSprite = StagePreviewSprites[2];
+        }
+        else if (global.stageNowTemp == 15)
+        {
+            if (StagePreviewSprites.Length > 3)
+                targetSprite = StagePreviewSprites[3];
+        }
+        else if (global.stageNowTemp == 20)
+        {
+            if (StagePreviewSprites.Length > 4)
+                targetSprite = StagePreviewSprites[4];
+        }
+        else if (global.stageNowTemp == 21)
+        {
+            if (StagePreviewSprites.Length > 4)
+                targetSprite = StagePreviewSprites[4];
+        }
+
+        else if (global.stageNowTemp == 22)
+        {
+            if (StagePreviewSprites.Length > 4)
+                targetSprite = StagePreviewSprites[4];
+        }
+        else if (global.stageNowTemp == 23)
+        {
+            if (StagePreviewSprites.Length > 4)
+                targetSprite = StagePreviewSprites[4];
+        }
+
+
+        PreviewImage.sprite = targetSprite;
+    }
+
+
 
     void SetStageButtons(int stage)
     {
@@ -114,4 +195,19 @@ public class StageSelectController : MonoBehaviour
     {
         WorkSheetToggle = false;
     }
+
+
+    public void ButtonToggleInfiniteSheetON()
+    {
+        InfiniteSheetToggle = true;
+        Debug.Log("Infinite Sheet ON");
+    }
+
+    public void ButtonToggleInfiniteSheetOFF()
+    {
+        InfiniteSheetToggle = false;
+        Debug.Log("Infinite Sheet OFF");
+    }
+
+
 }

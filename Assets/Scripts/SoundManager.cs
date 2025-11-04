@@ -62,6 +62,7 @@ public class SoundManager : MonoBehaviour
     }
 
     /* 배경음악 재생 **/
+    /*
     public void PlayBGM(string name, bool loop = true)
     {
         if (bgmSource == null) return;
@@ -76,6 +77,26 @@ public class SoundManager : MonoBehaviour
         bgmSource.loop = loop;
         bgmSource.Play();
     }
+    */
+    public void PlayBGM(string name, bool loop = true)
+    {
+        if (bgmSource == null || !bgmDict.ContainsKey(name))
+            return;
+
+        // 🎵 이미 같은 곡이 재생 중이면 다시 틀지 않음
+        if (bgmSource.isPlaying && bgmSource.clip == bgmDict[name])
+            return;
+
+        // 🔇 다른 곡이 재생 중이면 중단
+        bgmSource.Stop();
+
+        // ▶️ 새 곡 재생
+        bgmSource.clip = bgmDict[name];
+        bgmSource.loop = loop;
+        bgmSource.Play();
+    }
+
+
 
     /* 배경음악 재생 **/
     public void StopBGM(string name, bool loop = true)

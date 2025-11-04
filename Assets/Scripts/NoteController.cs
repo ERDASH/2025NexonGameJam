@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 
 [System.Serializable]
@@ -42,7 +43,42 @@ public class NoteController : MonoBehaviour
             if (!carSpriteDict.ContainsKey(set.carName))
                 carSpriteDict.Add(set.carName, set.carSprite);
         }
+        StartCoroutine(AutoToggleCoroutine());
     }
+
+
+
+    IEnumerator AutoToggleCoroutine()
+    {
+        // StageController 검색
+        StageController stageCtrl = FindObjectOfType<StageController>();
+
+        // 안전 확인
+        if (stageCtrl == null)
+        {
+            Debug.LogWarning("[NoteController] StageController를 찾을 수 없습니다.");
+            yield break;
+        }
+
+        float delayTime = 3f; // 기본값
+        /*
+        // 조건 분기
+        if (stageCtrl.infiniteMode)
+        {
+            delayTime = 5f;
+        }
+        */
+        if (!stageCtrl.infiniteMode && global.stageNow == 1)
+        {
+            delayTime = 6f;
+        }
+
+        Debug.Log($"[NoteController] {delayTime}초 후 자동으로 노트 토글 예정");
+        yield return new WaitForSeconds(delayTime);
+
+        ToggleNote();
+    }
+
 
     void Update()
     {

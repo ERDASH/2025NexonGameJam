@@ -24,14 +24,15 @@ public class CutsceneManager : MonoBehaviour
 
     [Header("컷씬 완료 후 이 오브젝트 비활성화")]
     public bool deactivateOnEnd = true;
-
+    bool IntroSound = false;
     public GameObject fullToon;
 
     void Start()
     {
-        SoundManager.Instance.PlayBGM("Intro");
+        //SoundManager.Instance.PlayBGM("Intro");
         StartCoroutine(PlayCutsceneSequence());
     }
+
 
     IEnumerator PlayCutsceneSequence()
     {

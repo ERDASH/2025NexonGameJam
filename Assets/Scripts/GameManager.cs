@@ -21,6 +21,8 @@ public static class global
     public static int StageMap=0;
 
     public static int carNow = 0;
+
+    public static int stageNowTemp = 0;
 }
 
 

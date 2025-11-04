@@ -593,7 +593,7 @@ public class StageController : MonoBehaviour
             // 2번째 금요일 : 색깔 차량 단속
             else if (global.stageNow == 10)
             {
-                stageText.text = global.stageNow + "일차 (신호등)";
+                stageText.text = global.stageNow + "일차 (요일제)";
                 trafficLightMode = true;
                 trafficLightLine = new int[] { 1, 2, 3 };
             }
@@ -610,6 +610,37 @@ public class StageController : MonoBehaviour
                 stageText.text = global.stageNow + "일차 (러쉬아워)";
                 rushHourMode = true;
             }
+
+            // 맨 마지막 주
+            else if (global.stageNow == 21)
+            {
+               // global.carSpeed = 5;
+                stageText.text = global.stageNow + "일차 (청소차 , 안개)";
+                breakerMode = true;
+                cloudMode = true;
+                cloudTimer = 1300;
+            }
+            else if (global.stageNow == 22)
+            {
+                global.carSpeed = 5;
+                stageText.text = global.stageNow + "일차 (요일제 , 러쉬아워)";
+                rushHourMode = true;
+
+                trafficLightMode = true;
+                trafficLightLine = new int[] { 1, 2, 3 };
+            }
+            else if (global.stageNow == 23)
+            {
+                global.carSpeed = 5;
+                stageText.text = global.stageNow + "일차 (청소차 , 요일제 , 러쉬아워)";
+                rushHourMode = true;
+                breakerMode = true;
+
+                trafficLightMode = true;
+                trafficLightLine = new int[] { 1, 2, 3 };
+            }
+
+
             // 무한모드 기본 세팅
             else if (global.stageNow == 100)
             {
