@@ -56,7 +56,7 @@ public class NoteController : MonoBehaviour
         // 안전 확인
         if (stageCtrl == null)
         {
-            Debug.LogWarning("[NoteController] StageController를 찾을 수 없습니다.");
+//            Debug.LogWarning("[NoteController] StageController를 찾을 수 없습니다.");
             yield break;
         }
 
@@ -73,10 +73,13 @@ public class NoteController : MonoBehaviour
             delayTime = 6f;
         }
 
-        Debug.Log($"[NoteController] {delayTime}초 후 자동으로 노트 토글 예정");
+//        Debug.Log($"[NoteController] {delayTime}초 후 자동으로 노트 토글 예정");
         yield return new WaitForSeconds(delayTime);
 
-        ToggleNote();
+        if (isOpen)
+        {
+            ToggleNote();
+        }
     }
 
 
@@ -127,7 +130,7 @@ public class NoteController : MonoBehaviour
     {
         if (!carSpriteDict.ContainsKey(carName))
         {
-            Debug.LogWarning($"[NoteController] 등록되지 않은 차량 이름: {carName}");
+//            Debug.LogWarning($"[NoteController] 등록되지 않은 차량 이름: {carName}");
             return;
         }
 
@@ -139,6 +142,6 @@ public class NoteController : MonoBehaviour
                 carImageSlots[i].sprite = sprite;
         }
 
-        Debug.Log($"[{carName}] 스프라이트 일괄 적용 완료");
+//        Debug.Log($"[{carName}] 스프라이트 일괄 적용 완료");
     }
 }

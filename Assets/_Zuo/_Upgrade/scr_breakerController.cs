@@ -54,7 +54,7 @@ public class scr_breakerController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("⚠️ cleanCarPrefab이 지정되지 않았습니다!");
+//            Debug.LogWarning("⚠️ cleanCarPrefab이 지정되지 않았습니다!");
         }
 
         // 💥 살짝 "펑" 효과 (X축만 확대)
@@ -101,7 +101,7 @@ public class scr_breakerController : MonoBehaviour
 
                     if (sr.gameObject.activeSelf)
                     {
-                        Debug.Log($"검사중: {sr.name}, 알파={sr.color.a}");
+                    //    Debug.Log($"검사중: {sr.name}, 알파={sr.color.a}");
 
                         if (sr.color.a > 0.9f)
                         {
@@ -114,7 +114,7 @@ public class scr_breakerController : MonoBehaviour
                 if (hasVisibleChild)
                 {
                     block.FallGone();
-                    Debug.Log($"{block.name} : FallingOn 실행됨 (투명도 > 0.9 자식 감지)");
+            //        Debug.Log($"{block.name} : FallingOn 실행됨 (투명도 > 0.9 자식 감지)");
                 }
             }
         }

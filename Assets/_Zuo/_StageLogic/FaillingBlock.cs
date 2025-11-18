@@ -14,6 +14,7 @@ public class FallingBlock : MonoBehaviour
 
     void Update()
     {
+        UpdateDepthByAlpha();
         if (ON == 1)
         {
             transform.position += Vector3.down * 9f * Time.deltaTime;
@@ -71,10 +72,37 @@ public class FallingBlock : MonoBehaviour
 
     }
 
+
+    void UpdateDepthByAlpha()
+    {
+        SpriteRenderer[] srs = GetComponentsInChildren<SpriteRenderer>();
+        if (srs.Length == 0) return;
+
+        // 자식 중 하나라도 반투명이면 이 오브젝트 전체를 깊이 10으로
+        bool hasFadeSprite = false;
+
+        foreach (var sr in srs)
+        {
+            float a = sr.color.a;
+            if (a > 0.3f && a < 1f)
+            {
+                hasFadeSprite = true;
+                break;
+            }
+        }
+
+        int order = hasFadeSprite ? 10 : 0;
+
+        foreach (var sr in srs)
+            sr.sortingOrder = order;
+    }
+
+
     public void FallOn()
     {
         if (ON == 0)
         {
+            GameManager.Instance.AddLife(global.lifeSubLineBreak);
             ON = 1;
         }
     }
@@ -125,12 +153,12 @@ public class FallingBlock : MonoBehaviour
 
             // 🔹 지금 겹쳐져 있는 Sensor들 찾아서 isOccupied = false
             Collider2D[] hits = GetComponentsInChildren<Collider2D>();
-            Debug.Log($"[FallGone] Collider2D 개수 = {hits.Length}");
+          //  Debug.Log($"[FallGone] Collider2D 개수 = {hits.Length}");
 
             foreach (var myCol in hits)
             {
                 if (!myCol.enabled) continue;
-                Debug.Log($"겹쳐져있나? ({myCol.name})");
+           //     Debug.Log($"겹쳐져있나? ({myCol.name})");
 
                 ContactFilter2D filter = new ContactFilter2D();
                 filter.useTriggers = true;
@@ -138,7 +166,7 @@ public class FallingBlock : MonoBehaviour
 
                 Collider2D[] overlap = new Collider2D[20];
                 int count = myCol.OverlapCollider(filter, overlap);
-                Debug.Log($"  ↳ Overlap count = {count}");
+         //       Debug.Log($"  ↳ Overlap count = {count}");
 
                 for (int i = 0; i < count; i++)
                 {
@@ -149,7 +177,7 @@ public class FallingBlock : MonoBehaviour
                     Sensor s = other.GetComponentInParent<Sensor>();
                     if (s != null)
                     {
-                        Debug.Log($"겹겹 → Sensor: {s.name}");
+              //          Debug.Log($"겹겹 → Sensor: {s.name}");
                         s.isOccupied = false;
                         s.UpdateGrid();
                     }

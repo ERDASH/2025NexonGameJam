@@ -51,7 +51,7 @@ public class StageFadeIn_UI : MonoBehaviour , IPointerEnterHandler
 
         if (rt == null || cg == null)
         {
-            Debug.LogError("RectTransform 또는 CanvasGroup이 필요합니다!");
+//            Debug.LogError("RectTransform 또는 CanvasGroup이 필요합니다!");
             return;
         }
 
@@ -106,6 +106,6 @@ public class StageFadeIn_UI : MonoBehaviour , IPointerEnterHandler
     {
         global.stageNowTemp = stageSelect;
         // 디버그용 로그
-        Debug.Log($"[Hover] global.stageNowTemp = {global.stageNowTemp}");
+//        Debug.Log($"[Hover] global.stageNowTemp = {global.stageNowTemp}");
     }
 }

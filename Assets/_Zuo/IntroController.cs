@@ -22,6 +22,7 @@ public class IntroController : MonoBehaviour
 
     public void ButtonSkip_Click()
     {
+        SoundManager.Instance.PlayBGM("StageSelect");
         global.mapChange = "Scene_Title";
 
 
@@ -30,6 +31,6 @@ public class IntroController : MonoBehaviour
             Instantiate(transitionPrefab);
         }
         //SceneManager.LoadScene("Scene_Title");
-        Debug.Log("clicked");
+//        Debug.Log("clicked");
     }
 }

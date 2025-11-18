@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Globalization;
 
 public class StageController : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class StageController : MonoBehaviour
     public TMP_Text scoreText;
     public TMP_Text targetScoreText;
     public TMP_Text stageText;
+
+    private int lastScore;
+    private float ScoreTextDisplay;
 
     public GameObject canvasResult;
     public GameObject canvasWin;
@@ -46,20 +50,27 @@ public class StageController : MonoBehaviour
     public int infiniteModeStage = 1;
     public GameObject infiniteModeLevelupPrefab;
 
+    public bool FirstCarSpawn = false;
 
     //무한모드 시스템 관련
     int[] result = new int[4];       // 0~3 자리, 기본은 0
     int[] prevResult = new int[4];   // 이전 상태 저장용
 
+    //UI 관련
+    public GameObject QuitPrefab;
+
+
     void Start()
     {
+        global.comboCount = 0;
+
         SoundManager.Instance.PlayBGM("Ingame");
         StageBalanceSetting();
         InfiniteBalanceSetting();
         global.isGameOver = 0;
         GameManager.Instance.life = 10000;
         GameManager.Instance.score = 0;
-
+        /*
         if (lifeBarRenderer == null)
             Debug.LogError("lifeBarRenderer가 연결되지 않았습니다.");
 
@@ -68,7 +79,7 @@ public class StageController : MonoBehaviour
 
         if (btnNextStage == null)
             Debug.LogError("btnNextStage 버튼이 연결되지 않았습니다.");
-
+        */
         if (canvasResult != null) canvasResult.SetActive(false);
         if (canvasWin != null) canvasWin.SetActive(false);
         if (canvasLose != null) canvasLose.SetActive(false);
@@ -167,6 +178,13 @@ public class StageController : MonoBehaviour
         //---------------------------------------------------------------
 
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            QuitPrefab.SetActive(!QuitPrefab.activeSelf);
+        }
+
+
+
 
         if (cloudMode == true)
         {
@@ -179,7 +197,7 @@ public class StageController : MonoBehaviour
                     Vector3 spawnPos = new Vector3(12f + i * 4, Random.Range(-4f, 0f), 0f);
                     Instantiate(cloudPrefab, spawnPos, Quaternion.identity);
                 }
-                Debug.Log("Cloud Created!!!");
+//                Debug.Log("Cloud Created!!!");
                 cloudTimer = 0;
             }
         }
@@ -189,7 +207,7 @@ public class StageController : MonoBehaviour
         // 🔹 breaker 모드일 때 랜덤 생성 시도
         if (breakerMode)
         {
-            int rand = Random.Range(1, 201); // 1~200
+            int rand = Random.Range(1, 250);
             if (rand == 1)
             {
                 SpawnBreaker();
@@ -208,9 +226,9 @@ public class StageController : MonoBehaviour
         GameStageBlockController controller = FindObjectOfType<GameStageBlockController>();
         if (controller != null)
         {
-            if (controller.infiniteModeDelay == false)
+            if (controller.infiniteModeDelay == false && FirstCarSpawn==true)
             {
-                GameManager.Instance.AddLife(-1);
+                GameManager.Instance.AddLife(global.lifeSubTick);
             }
         }
 
@@ -234,10 +252,40 @@ public class StageController : MonoBehaviour
             lifeBarTempRenderer.transform.localScale = current;
         }
 
+
+
         if (scoreText != null)
         {
-            scoreText.text = $"{GameManager.Instance.GetScore()}";
+            int currentScore = GameManager.Instance.GetScore();
+
+            // 점수 바뀌었을 때만 "뽈록"
+            if (currentScore != lastScore)
+            {
+                lastScore = currentScore;
+                scoreText.transform.localScale = Vector3.one * 1.5f;   // 한번 확 키우기
+            }
+
+            // 점수 부드럽게 따라가기
+            ScoreTextDisplay += (currentScore - ScoreTextDisplay) / 5f;
+            scoreText.text = $"{Mathf.RoundToInt(ScoreTextDisplay)}";
+
+            // scale을 서서히 1로 복귀
+            scoreText.transform.localScale = Vector3.Lerp(
+                scoreText.transform.localScale,
+                Vector3.one,
+                Time.deltaTime * 5f   // 숫자 키우면 더 빨리 원래 크기로 돌아감
+            );
         }
+
+
+
+        /*
+        if (scoreText != null)
+        {
+            ScoreTextDisplay += (GameManager.Instance.GetScore()- ScoreTextDisplay)/10;
+//            scoreText.text = $"{ScoreTextDisplay}"; //GameManager.Instance.GetScore()}";
+            scoreText.text = $"{Mathf.RoundToInt(ScoreTextDisplay)}";
+        }*/
 
 
         /*
@@ -271,7 +319,7 @@ public class StageController : MonoBehaviour
                         위에 이동하는 차는 제거되는데, 설치한 차량과 그런건 안지워짐
                         늘 그랬던것처럼 시간지나면 다시 자동차 등장함. 자동차 안멈췄음.
                      */
-                    Debug.Log("해당 코드 작동 완료");
+//                    Debug.Log("해당 코드 작동 완료");
                 }
 
 
@@ -510,7 +558,7 @@ public class StageController : MonoBehaviour
         }
 
         // 디버그 출력용
-        Debug.Log($"[Stage {infiniteModeStage}] 결과: {string.Join(",", result)}");
+//        Debug.Log($"[Stage {infiniteModeStage}] 결과: {string.Join(",", result)}");
     }
 
     bool AreSame(int[] a, int[] b)
@@ -553,6 +601,26 @@ public class StageController : MonoBehaviour
         */
     }
 
+
+    void StructBalance(int day,int targetscore, float carspeed,float carspawnspeed,int lifesubtick,int lifesubbadfail,int lifesubmiss,int lifeaddbadsuccess,int lifeaddline1,int lifeaddline2,int lifeaddline3,int lifeaddline4,int carbadper)
+    {
+        if (global.stageNow == day)
+        {
+            GameManager.Instance.targetScore = targetscore;
+            global.carSpeed = carspeed;
+            global.carSpawnSpeed = carspawnspeed;
+            global.lifeSubTick = lifesubtick;
+            global.lifeSubBadFail = lifesubbadfail;
+            global.lifeSubMiss = lifesubmiss;
+            global.lifeAddBadSuccess = lifeaddbadsuccess;
+            global.lifeAddLine1 = lifeaddline1;
+            global.lifeAddLine2 = lifeaddline2;
+            global.lifeAddLine3 = lifeaddline3;
+            global.lifeAddLine4 = lifeaddline4;
+            global.carBadPer = carbadper;
+        }
+    }
+
     void StageBalanceSetting()
     {
         if (infiniteMode == false)
@@ -576,11 +644,41 @@ public class StageController : MonoBehaviour
                     break;
             }
 
+            // 스테이지 모드 밸런스 세팅
+            // 1주차
+            StructBalance(1, 2500, 5.0f, 1.00f, -1, -200, -200, 300, 100, 300, 700, 1500, 10);
+            StructBalance(2, 3000, 5.0f, 0.90f, -1, -200, -200, 300, 100, 300, 700, 1500, 10);
+            StructBalance(3, 3200, 5.0f, 0.90f, -1, -200, -200, 300, 100, 300, 700, 1500, 10);
+            StructBalance(4, 3400, 5.2f, 0.84f, -1, -200, -200, 300, 100, 300, 700, 1500, 15);
+            StructBalance(5, 3600, 5.5f, 0.84f, -1, -200, -200, 300, 100, 300, 700, 1500, 15);
+            // 2주차
+            StructBalance(6, 4000, 5.8f, 0.80f, -1, -200, -200, 300, 100, 300, 700, 1500, 15);
+            StructBalance(7, 4400, 6.1f, 0.76f, -1, -200, -200, 300, 100, 300, 700, 1500, 15);
+            StructBalance(8, 4800, 6.4f, 0.72f, -1, -200, -200, 300, 100, 300, 700, 1500, 15);
+            StructBalance(9, 5200, 6.7f, 0.68f, -1, -200, -200, 300, 100, 300, 700, 1500, 20);
+            StructBalance(10, 5600, 7.0f, 0.64f, -1, -200, -200, 300, 100, 300, 700, 1500, 0);
+            // 3주차
+            StructBalance(11, 6000, 7.3f, 0.60f, -1, -200, -200, 300, 100, 300, 700, 1500, 20);
+            StructBalance(12, 6400, 7.6f, 0.56f, -1, -200, -200, 300, 100, 300, 700, 1500, 20);
+            StructBalance(13, 6800, 7.9f, 0.52f, -1, -200, -200, 300, 100, 300, 700, 1500, 20);
+            StructBalance(14, 7200, 8.2f, 0.48f, -1, -200, -200, 300, 100, 300, 700, 1500, 30);
+            StructBalance(15, 7600, 8.5f, 0.44f, -1, -200, -200, 300, 100, 300, 700, 1500, 0);
+            // 4주차
+            StructBalance(16, 8000, 8.8f, 0.40f, -1, -250, -200, 300, 200, 400, 800, 1500, 30);
+            StructBalance(17, 8500, 9.1f, 0.36f, -1, -250, -200, 300, 200, 400, 800, 1500, 30);
+            StructBalance(18, 9000, 9.4f, 0.32f, -1, -250, -200, 300, 200, 400, 800, 1500, 30);
+            StructBalance(19, 9000, 9.7f, 0.28f, -1, -250, -200, 300, 200, 400, 800, 1500, 30);
+            StructBalance(20, 10000, 4.5f, 0.24f, -1, -250, -200, 300, 200, 400, 800, 1500, 10);
+            // 5주차
+            StructBalance(21, 10000, 10.0f, 0.28f, -1, -250, -200, 300, 200, 400, 800, 1500, 0);
+            StructBalance(22, 10000, 6.0f, 0.40f, -1, -250, -200, 300, 200, 400, 800, 1500, 0);
+            StructBalance(23, 10000, 6.5f, 0.24f, -1, -250, -200, 300, 200, 400, 800, 1500, 0);
+
 
             // 기본값
-            GameManager.Instance.targetScore = 1600 + global.stageNow * 400;
-            global.carSpeed = 4 + (global.stageNow*0.3f);
-            global.carSpawnSpeed = 1 - (global.stageNow - 1) * 0.04f;
+            //            GameManager.Instance.targetScore = 1600 + global.stageNow * 400;
+            //          global.carSpeed = 4 + (global.stageNow*0.3f);
+            //         global.carSpawnSpeed = 1 - (global.stageNow - 1) * 0.04f;
             stageText.text = global.stageNow + "일차";
 
             // 1번째 금요일 : 안개
@@ -671,7 +769,7 @@ public class StageController : MonoBehaviour
             breaker.targetLine = lineNum;
         }
 
-        Debug.Log($"[Breaker] 라인 {lineNum} 소환됨");
+//        Debug.Log($"[Breaker] 라인 {lineNum} 소환됨");
     }
 
 

@@ -51,12 +51,12 @@ public class CutsceneManager : MonoBehaviour
                 else
                     element.PlayExitAnimation();
             }
-            Debug.Log("컷씬 진행 중: " + count);
+        //    Debug.Log("컷씬 진행 중: " + count);
 
             yield return new WaitUntil(() => completedCount >= group.elements.Count);
         }
 
-        Debug.Log("컷씬 전체 완료");
+     //   Debug.Log("컷씬 전체 완료");
         if (fullToon != null)
             fullToon.SetActive(true);
 

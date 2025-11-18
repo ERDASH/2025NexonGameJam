@@ -13,7 +13,7 @@ public class TypingEffect : MonoBehaviour
 
     public static void TMPDOText(TextMeshProUGUI text, float duration)
     {
-        Debug.Log("잘 나와용", text);
+//        Debug.Log("잘 나와용", text);
         text.maxVisibleCharacters = 0;
         DOTween.To(x=> text.maxVisibleCharacters = (int)x, 0f, text.text.Length, duration);
     }

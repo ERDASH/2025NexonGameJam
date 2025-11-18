@@ -64,13 +64,13 @@ public class PaperUIElement : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         // 3. 정수형으로 변환
         if (int.TryParse(numberStr, out int stageNumber))
         {
-            Debug.Log("스테이지 번호: " + stageNumber);
+//            Debug.Log("스테이지 번호: " + stageNumber);
 
             return stageNumber;
         }
         else
         {
-            Debug.LogWarning("숫자 추출 실패: " + parentName);
+//            Debug.LogWarning("숫자 추출 실패: " + parentName);
             return 0;
         }
     }

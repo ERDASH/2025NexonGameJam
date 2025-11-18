@@ -48,9 +48,9 @@ public class GameStageBlockController : MonoBehaviour
     private int rushHourCarRandom = 0;
     private int[] rushHourCarList = new int[10];
 
+    public GameObject comboPrefab;
 
-
-    enum BlockType { OneByOne, OneByTwo, OneByFour, TwoByTwo }
+    enum BlockType { OneByOne, OneByTwo, OneByFour, TwoByTwo , OneByThree}
     private BlockType currentBlockType;
 
     void Start()
@@ -150,7 +150,7 @@ public class GameStageBlockController : MonoBehaviour
     public void FunctionDestoryBlock()
     {
 
-        Debug.Log("이건작동되나111");
+//        Debug.Log("이건작동되나111");
 
         //   ClearCurrentBlock();
 
@@ -176,7 +176,7 @@ public class GameStageBlockController : MonoBehaviour
 
     public void FunctionReloadBlock()
     {
-        Debug.Log("이건작동되나222");
+//        Debug.Log("이건작동되나222");
         global.CarPass = 1;
 
 
@@ -258,6 +258,7 @@ public class GameStageBlockController : MonoBehaviour
             isGameStart = true;
             SpawnBlock();
         }
+        stageCtrl.FirstCarSpawn = true;
     }
 
     void CarExistCheck()
@@ -305,8 +306,45 @@ public class GameStageBlockController : MonoBehaviour
         RealStart = 1;
     }
 
+    public void ComboUpdate(int Type)
+    {
+        if (Type==0)
+        {
+            if (comboPrefab != null && previewBlock != null)
+            {
+                global.comboCount += 1;
+                Vector3 spawnPos = previewBlock.transform.position;
+                Instantiate(comboPrefab, spawnPos, Quaternion.identity);
+            }
+        }
+        if (Type==1)
+        {
+            global.comboCount = 0;
+        }
+    }
     void Update()
     {
+
+        
+        if (Input.GetKeyDown(KeyCode.M) && comboPrefab != null && previewBlock != null)
+        {
+            Vector3 spawnPos = previewBlock.transform.position;
+            // 살짝 위에 띄우고 싶으면
+            // spawnPos.y += 0.3f;
+
+            Instantiate(comboPrefab, spawnPos, Quaternion.identity);
+        }
+        /*
+        if (Input.GetKeyDown(KeyCode.M) && comboPrefab != null)
+        {
+            // 화면의 마우스 좌표 → 월드 좌표로 변환
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.z = 0f;  // z축 0으로 고정 (2D 게임일 경우)
+
+            Instantiate(comboPrefab, mousePos, Quaternion.identity);
+        }
+        */
+
         //------------------------------------
         // Debug 
         //------------------------------------
@@ -463,11 +501,12 @@ public class GameStageBlockController : MonoBehaviour
 
                 if (isBad)
                 {
+                    ComboUpdate(1);
                     PlayerFSM PlayerScr = playerPrefab.GetComponent<PlayerFSM>();
                     if (PlayerScr != null)
                         PlayerScr.CheckFail();
 
-                    GameManager.Instance.AddLife(-100);
+                    GameManager.Instance.AddLife(global.lifeSubBadFail);
                     FunctionReloadBlock();
                     FunctionDestoryBlock();
                 }
@@ -623,6 +662,7 @@ public class GameStageBlockController : MonoBehaviour
         Vector2[] positions = GetBlockPositions(previewPos);
         if (CanPlaceBlock(positions))
         {
+            ComboUpdate(0);
             FunctionDestoryBlock();
             foreach (Vector2 p in positions)
             {
@@ -665,6 +705,7 @@ public class GameStageBlockController : MonoBehaviour
         }
         else
         {
+            ComboUpdate(1);
             bool isTryingTopRow = false;
             foreach (Vector2 p in positions)
             {
@@ -800,19 +841,19 @@ public class GameStageBlockController : MonoBehaviour
         {
             case 1:
                 GameManager.Instance.AddScore(150);
-                GameManager.Instance.AddLife(100);
+                GameManager.Instance.AddLife(global.lifeAddLine1);
                 break;
             case 2:
                 GameManager.Instance.AddScore(250);
-                GameManager.Instance.AddLife(300);
+                GameManager.Instance.AddLife(global.lifeAddLine2);
                 break;
             case 3:
                 GameManager.Instance.AddScore(400);
-                GameManager.Instance.AddLife(700);
+                GameManager.Instance.AddLife(global.lifeAddLine3);
                 break;
             case 4:
                 GameManager.Instance.AddScore(600);
-                GameManager.Instance.AddLife(1500);
+                GameManager.Instance.AddLife(global.lifeAddLine4);
                 break;
         }
     }
@@ -832,6 +873,7 @@ public class GameStageBlockController : MonoBehaviour
                     center + Vector2.up,
                     center + Vector2.right + Vector2.up
                 };
+            case BlockType.OneByThree: return new Vector2[] { center, GetOffset(center, 1), GetOffset(center, 2) };
         }
         return new Vector2[] { center };
     }
@@ -894,7 +936,10 @@ public class GameStageBlockController : MonoBehaviour
     int SpawnBlockRandom()
     {
         int randReal = Random.Range(0, 100);
-        int[] choice_car = { 1, 12, 13, 14, 15, 21, 31 };
+        
+
+        // ## 11/18 ##
+        int[] choice_car = { 1, 12, 13, 14, 15, 21, 31,41 };
 
         StageController stageCtrl = FindObjectOfType<StageController>();
         if (stageCtrl != null && stageCtrl.trafficLightMode)
@@ -915,7 +960,8 @@ public class GameStageBlockController : MonoBehaviour
     {
         global.isBadCar = false;
         int randReal = Random.Range(0, 100);
-        int[] choice_car = { 1, 12, 13, 14, 15, 21, 31 };
+        // ## 11/18 ##
+        int[] choice_car = { 1, 12, 13, 14, 15, 21, 31 , 41};
         StageController stageCtrl = FindObjectOfType<StageController>();
 
         // ----------------------------------------------
@@ -1009,6 +1055,7 @@ public class GameStageBlockController : MonoBehaviour
             BlockType.OneByTwo => "Block11",
             BlockType.OneByFour => "Block21",
             BlockType.TwoByTwo => "Block31",
+            BlockType.OneByThree => "Block41",
             _ => ""
         };
 
@@ -1055,6 +1102,7 @@ public class GameStageBlockController : MonoBehaviour
                     17 => "car1x2_07",
                     21 => "car1x4_01",
                     31 => "car2x2_01",
+                    41 => "car1x3_01",
                     _ => null
                 };
 
@@ -1096,6 +1144,7 @@ public class GameStageBlockController : MonoBehaviour
                     17 => "car1x2_07",
                     21 => "car1x4_01",
                     31 => "car2x2_01",
+                    41 => "car1x3_01",
                     _ => null
                 };
 

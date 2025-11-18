@@ -188,7 +188,7 @@ public class StageSelectController : MonoBehaviour
     public void ButtonToggleSheetON()
     {
         WorkSheetToggle = true;
-        Debug.Log("TETETE");
+    //    Debug.Log("TETETE");
     }
 
     public void ButtonToggleSheetOFF()
@@ -200,13 +200,13 @@ public class StageSelectController : MonoBehaviour
     public void ButtonToggleInfiniteSheetON()
     {
         InfiniteSheetToggle = true;
-        Debug.Log("Infinite Sheet ON");
+     //   Debug.Log("Infinite Sheet ON");
     }
 
     public void ButtonToggleInfiniteSheetOFF()
     {
         InfiniteSheetToggle = false;
-        Debug.Log("Infinite Sheet OFF");
+   //     Debug.Log("Infinite Sheet OFF");
     }
 
 

@@ -24,7 +24,7 @@ public class TitleController : MonoBehaviour
         GameObject root = GameObject.Find("Obj_TitleController");
         if (root == null)
         {
-            Debug.LogError("Obj_TitleController를 찾을 수 없습니다.");
+//            Debug.LogError("Obj_TitleController를 찾을 수 없습니다.");
             return;
         }
 
@@ -39,11 +39,11 @@ public class TitleController : MonoBehaviour
         {
             sprHow = sprHowTransform.GetComponent<SpriteRenderer>();
         }
-
+        /*
         if (canvasHow == null) Debug.LogError("CanvasHow 오브젝트를 찾을 수 없습니다.");
         if (canvasHowBtn == null) Debug.LogError("CanvasHowBtn 오브젝트를 찾을 수 없습니다.");
         if (canvasTitleBtn == null) Debug.LogError("CanvasTitleBtn 오브젝트를 찾을 수 없습니다.");
-
+        */
         if (canvasHow != null) canvasHow.SetActive(false);
         if (canvasHowBtn != null) canvasHowBtn.SetActive(false);
 
@@ -69,7 +69,7 @@ public class TitleController : MonoBehaviour
         }
         else
         {
-            Debug.LogError("How 버튼 클릭 시 참조가 null입니다.");
+         //   Debug.LogError("How 버튼 클릭 시 참조가 null입니다.");
         }
     }
 
@@ -150,7 +150,7 @@ public class TitleController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"해당 경로에 스프라이트 없음: {path}");
+      //      Debug.LogWarning($"해당 경로에 스프라이트 없음: {path}");
         }
     }
 
@@ -167,7 +167,7 @@ public class TitleController : MonoBehaviour
         RectTransform rt = target.GetComponent<RectTransform>();
         if (rt == null)
         {
-            Debug.LogError("UI 오브젝트에 RectTransform 없음");
+       //     Debug.LogError("UI 오브젝트에 RectTransform 없음");
             yield break;
         }
 

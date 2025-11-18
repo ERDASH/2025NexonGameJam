@@ -39,6 +39,9 @@ public class MoveCarController : MonoBehaviour
         // 2*2
         else if (stageCtrl.rushHourMode == false && global.carNow == 31 || stageCtrl.rushHourMode == true && rushHourCarNumber == 31) { spriteIndex = "car2x2_01"; soundPlay("BigTruck"); }
 
+        // 3x1
+        else if (stageCtrl.rushHourMode == false && global.carNow == 41 || stageCtrl.rushHourMode == true && rushHourCarNumber == 41) { spriteIndex = "car1x3_01"; soundPlay("BigTruck"); }
+
         string path = $"_Res_Zuo/Res_Stage/Res_Stage_Car/{spriteIndex}";
 
         Sprite newSprite = Resources.Load<Sprite>(path);
@@ -53,7 +56,7 @@ public class MoveCarController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Sprite not found at path: {path}");
+//            Debug.LogWarning($"Sprite not found at path: {path}");
         }
 
         // 30% 확률로 bad car 지정
@@ -147,20 +150,22 @@ public class MoveCarController : MonoBehaviour
                     SoundManager.Instance.PlaySFX("SpaceBar");
                     if (global.isBadCar == true)
                     {
-                        GameManager.Instance.AddLife(300);
+                        GameManager.Instance.AddLife(global.lifeAddBadSuccess);
                         GameManager.Instance.AddScore(150);
                         PlayerFSM PlayerScr = playerPrefab.GetComponent<PlayerFSM>();
                         if (PlayerScr != null)
                         {
+                            component.ComboUpdate(0);
                             PlayerScr.CheckSuccess(); // 단속 성공 표정
                         }
                     }
                     else
                     {
-                        GameManager.Instance.AddLife(-200);
+                        GameManager.Instance.AddLife(-global.lifeSubBadFail);
                         PlayerFSM PlayerScr = playerPrefab.GetComponent<PlayerFSM>();
                         if (PlayerScr != null)
                         {
+                            component.ComboUpdate(1);
                             PlayerScr.CheckFail(); // 단속 실수 표정
                         }
                     }
@@ -203,7 +208,7 @@ public class MoveCarController : MonoBehaviour
             // 차량을 설치/단속 하지 않아서 오른쪽 밖으로 나갔을 때 처리
             if (transform.position.x > boundaryX)
             {
-                GameManager.Instance.AddLife(-200);
+                GameManager.Instance.AddLife(global.lifeSubMiss);
                 PlayerFSM PlayerScr = playerPrefab.GetComponent<PlayerFSM>();
                 if (PlayerScr != null)
                 {

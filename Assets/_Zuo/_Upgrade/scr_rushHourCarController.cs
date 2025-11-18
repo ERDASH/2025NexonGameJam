@@ -24,7 +24,7 @@ public class scr_rushHourCarController : MonoBehaviour
 
     void CarDestroy()
     {
-        Debug.Log("[RushHourCar] 차량 제거됨");
+//        Debug.Log("[RushHourCar] 차량 제거됨");
 //        Destroy(gameObject); // 차량 오브젝트 제거
     }
 }

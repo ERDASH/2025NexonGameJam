@@ -19,7 +19,7 @@ public class Police : MonoBehaviour
         image = GetComponent<Image>();
         if (image == null)
         {
-            Debug.LogError("Image 컴포넌트가 필요합니다.");
+//            Debug.LogError("Image 컴포넌트가 필요합니다.");
             return;
         }
 

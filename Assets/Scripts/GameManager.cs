@@ -23,6 +23,19 @@ public static class global
     public static int carNow = 0;
 
     public static int stageNowTemp = 0;
+
+    public static int comboCount = 0;
+
+    public static int lifeSubTick = -1;
+    public static int lifeSubBadFail = -200;
+    public static int lifeSubMiss = -200;
+    public static int lifeSubLineBreak = -100;
+
+    public static int lifeAddBadSuccess = 300;
+    public static int lifeAddLine1 = 100;
+    public static int lifeAddLine2 = 300;
+    public static int lifeAddLine3 = 700;
+    public static int lifeAddLine4 = 1500;
 }
 
 
@@ -80,16 +93,16 @@ public class GameManager : MonoBehaviour
     //for Debug
     void Update()
     {
-        OnRightClick();
+        //OnRightClick();
         if (score < 1) { score = 0; }
     }
-
+    /*
     void OnRightClick()
     {
         if (Input.GetMouseButtonDown(1))
         {
             Debug.Log(global.stage);
         }
-    }
+    }*/
 
 }

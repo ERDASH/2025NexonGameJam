@@ -13,7 +13,7 @@ public class scr_stampController : MonoBehaviour
         img = GetComponent<Image>();
         if (img == null)
         {
-            Debug.LogError("⚠️ Image 컴포넌트가 필요합니다!");
+  //          Debug.LogError("⚠️ Image 컴포넌트가 필요합니다!");
             return;
         }
 
@@ -102,7 +102,7 @@ public class scr_stampController : MonoBehaviour
         {
             Instantiate(transitionPrefab);
         }
-        Debug.Log("✅ Stamp finished!");
+//        Debug.Log("✅ Stamp finished!");
         // 예: 다음 연출로 넘어가기
     }
 }

@@ -37,10 +37,10 @@ public class scr_debugMesssage : MonoBehaviour
                 Stage = global.stageNow;
             }
             if (text1 != null)
-                text1.text = "==== 테스트 ====\n모드 : "+Mode+"\n스테이지 : "+ Stage+"\n현재 차량 속도 : "+global.carSpeed+"\n속도 감소(O), 증가(P)"+"\n리젠 속도 : "+global.carSpawnSpeed+"\n목표점수 : "+Point+"\n현재체력 : "+GameManager.Instance.GetLife();   // 줄바꿈 포함
+                text1.text = "모드 : "+Mode+"\n스테이지 : "+ Stage+"\n현재 차량 속도 : "+global.carSpeed+"\n속도 감소(O), 증가(P)"+"\n리젠 속도 : "+global.carSpawnSpeed+"\n목표점수 : "+Point+"\n현재체력 : "+GameManager.Instance.GetLife();   // 줄바꿈 포함
 
             if (text2 != null)
-                text2.text = "\n구름(C) : "+ModeOnOff[0]+ "\n색상차량(B) : "+ModeOnOff[1]+"\n청소차(V) : " + ModeOnOff[2]+"\n러쉬아워(N) : " + ModeOnOff[3]+ "\n체력감소(S)\n점수추가(D)";
+                text2.text = "구름(C) : "+ModeOnOff[0]+ "\n색상차량(B) : "+ModeOnOff[1]+"\n청소차(V) : " + ModeOnOff[2]+"\n러쉬아워(N) : " + ModeOnOff[3]+ "\n체력감소(S)\n점수추가(D)";
         }
     }
 }
